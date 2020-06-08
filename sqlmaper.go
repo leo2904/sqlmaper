@@ -1,6 +1,6 @@
 // Package sqlmaper provides a way to parse and handle the sql statements found in a sql file
-// This sql file could not be any sql file, it needs some king of metadata information
-// to handle everything properly, or not!!!
+// This sql file could not be any sql file, it needs some kind of metadata information to
+// handle everything properly, or not!!!
 package sqlmaper
 
 import (
@@ -361,4 +361,12 @@ func scapeColon(s string) string {
 		return s
 	}
 	return str.String()
+}
+
+//TODO: new idea... parse a regular sql file (the one that everybody writes without
+// the format imposed by this package).
+// The map ID could be a query's hash and the querys name I don't know yet, maybe nothing)
+// ParseFreeFileReader parse an unstructured query file
+func ParseFreeFileReader(r io.Reader) (*Query, error) {
+	return nil, nil
 }

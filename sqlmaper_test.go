@@ -20,7 +20,7 @@ func TestParseLine(t *testing.T) {
 		{"  rollback -- rollback de los cambios", parsedLine{Type: lineToSkip, Tag: "", Value: ""}},
 		{"roll", parsedLine{Type: lineQuery, Tag: "", Value: "roll"}}, // this test is to validate that the string slicing are protected, doesn't matter if the sql sentences is not valid
 		{"select count(*) from peoples;", parsedLine{Type: lastLineQuery, Tag: "", Value: "select count(*) from peoples;"}},
-		{"select count(*)\nfrom pets;   -- quantity of pets", parsedLine{Type: lastLineQuery, Tag: "", Value: "select count(*)\nfrom pets;"}},
+		{"select count(*)\nfrom pets   -- quantity of pets", parsedLine{Type: lineQuery, Tag: "", Value: "select count(*)\nfrom pets"}},
 		{"-- tag=name: Quantity of peoples", parsedLine{Type: lineName, Tag: "name", Value: "Quantity of peoples"}},
 		{"--tag = NAME: Quantity of pets", parsedLine{Type: lineName, Tag: "name", Value: "Quantity of pets"}},
 		{"-- tag= FileName: peoples.unl", parsedLine{Type: lineTag, Tag: "filename", Value: "peoples.unl"}},
@@ -39,7 +39,17 @@ func TestParseLine(t *testing.T) {
 	for i, tt := range tests {
 		assert.Equal(t, tt.expected, parseLine(tt.feed), tt.feed, "Case: %d", i)
 	}
+}
 
+func TestParseQueryFile(t *testing.T) {
+	fileRecord := `
+select count(*) as Cant from Employees;
+create table TempSales as select * from Sales where CompanyID = :IDCompany;
+select * from TempSales;
+`
+	q, err := ParseFreeFileReader(strings.NewReader(fileRecord))
+	assert.Nil(t, err, "error: %v", err)
+	_ = q
 }
 
 func TestQueryTerminator(t *testing.T) {
