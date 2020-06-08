@@ -36,24 +36,24 @@ create index counX1 on countries (ID);
 		i++
 		switch i {
 		case 1:
-			assert.Equal(t, "select * from peoples;", iter.Statement(), "")
+			assert.Equal(t, "select * from peoples", iter.Statement(), "")
 			assert.Equal(t, DQL, iter.QueryType())
 			assert.Equal(t, "Select1", iter.TagValue("name"))
 			assert.Equal(t, "peoples.psv", iter.TagValue("fileName"))
 		case 2:
-			assert.Equal(t, "select * from cities;", iter.Statement(), "")
+			assert.Equal(t, "select * from cities", iter.Statement(), "")
 			assert.Equal(t, DQL, iter.QueryType())
 		case 3:
-			assert.Equal(t, "update peoples set Name = 'Leo' where ID = 1;", iter.Statement(), "")
+			assert.Equal(t, "update peoples set Name = 'Leo' where ID = 1", iter.Statement(), "")
 			assert.Equal(t, DML, iter.QueryType())
 		case 4:
-			assert.Equal(t, "insert into Cities (ID, Name) values (1, 'Barcelone');", iter.Statement(), "")
+			assert.Equal(t, "insert into Cities (ID, Name) values (1, 'Barcelone')", iter.Statement(), "")
 			assert.Equal(t, DML, iter.QueryType())
 		case 5:
-			assert.Equal(t, "create table countries (ID number, Name varchar2(50));", iter.Statement(), "")
+			assert.Equal(t, "create table countries (ID number, Name varchar2(50))", iter.Statement(), "")
 			assert.Equal(t, DDL, iter.QueryType())
 		case 6:
-			assert.Equal(t, "create index counX1 on countries (ID);", iter.Statement(), "")
+			assert.Equal(t, "create index counX1 on countries (ID)", iter.Statement(), "")
 			assert.Equal(t, DDL, iter.QueryType())
 		default:
 			t.Errorf("Should be not here, ever - i: %d", i)
@@ -93,16 +93,16 @@ select * from KK3;
 		i++
 		switch i {
 		case 1:
-			assert.Equal(t, "update peoples set Name = 'Leo' where ID = 1;", seqIter.Statement())
+			assert.Equal(t, "update peoples set Name = 'Leo' where ID = 1", seqIter.Statement())
 			assert.Equal(t, DML, seqIter.QueryType())
 		case 2:
-			assert.Equal(t, "insert into Cities (ID, Name) values (1, 'Barcelone');", seqIter.Statement())
+			assert.Equal(t, "insert into Cities (ID, Name) values (1, 'Barcelone')", seqIter.Statement())
 			assert.Equal(t, DML, seqIter.QueryType())
 		case 3:
-			assert.Equal(t, "create table countries (ID number, Name varchar2(50));", seqIter.Statement())
+			assert.Equal(t, "create table countries (ID number, Name varchar2(50))", seqIter.Statement())
 			assert.Equal(t, DDL, seqIter.QueryType())
 		case 4:
-			assert.Equal(t, "create index counX1 on countries (ID);", seqIter.Statement())
+			assert.Equal(t, "create index counX1 on countries (ID)", seqIter.Statement())
 			assert.Equal(t, DDL, seqIter.QueryType())
 		default:
 			t.Errorf("Should be not here, ever - i: %d", i)
@@ -116,15 +116,15 @@ select * from KK3;
 		i++
 		switch i {
 		case 1:
-			assert.Equal(t, "select * from peoples;", concIter.Statement())
+			assert.Equal(t, "select * from peoples", concIter.Statement())
 			assert.Equal(t, DQL, concIter.QueryType())
 			assert.Equal(t, "Select1", concIter.TagValue("name"))
 			assert.Equal(t, "peoples.psv", concIter.TagValue("fileName"))
 		case 2:
-			assert.Equal(t, "select * from cities;", concIter.Statement())
+			assert.Equal(t, "select * from cities", concIter.Statement())
 			assert.Equal(t, DQL, concIter.QueryType())
 		case 3:
-			assert.Equal(t, "select * from KK3;", concIter.Statement())
+			assert.Equal(t, "select * from KK3", concIter.Statement())
 		default:
 			t.Errorf("Should be not here, ever - i: %d", i)
 		}
@@ -155,12 +155,12 @@ select * from cities;
 		i++
 		switch i {
 		case 1:
-			assert.Equal(t, "select * from peoples;", concIter.Statement(), "")
+			assert.Equal(t, "select * from peoples", concIter.Statement(), "")
 			assert.Equal(t, DQL, concIter.QueryType())
 			assert.Equal(t, "Select1", concIter.TagValue("name"))
 			assert.Equal(t, "peoples.psv", concIter.TagValue("fileName"))
 		case 2:
-			assert.Equal(t, "select * from cities;", concIter.Statement(), "")
+			assert.Equal(t, "select * from cities", concIter.Statement(), "")
 			assert.Equal(t, DQL, concIter.QueryType())
 		default:
 			t.Errorf("Should be not here, ever - i: %d", i)
@@ -187,14 +187,14 @@ create table countries (ID number, Name varchar2(50));
 		i++
 		switch i {
 		case 1:
-			assert.Equal(t, "update peoples set Name = 'Leo' where ID = 1;", seqIter.Statement())
+			assert.Equal(t, "update peoples set Name = 'Leo' where ID = 1", seqIter.Statement())
 			assert.Equal(t, DML, seqIter.QueryType())
 			assert.Equal(t, "Update1", seqIter.TagValue("name"))
 		case 2:
-			assert.Equal(t, "insert into Cities (ID, Name) values (1, 'Barcelone');", seqIter.Statement())
+			assert.Equal(t, "insert into Cities (ID, Name) values (1, 'Barcelone')", seqIter.Statement())
 			assert.Equal(t, DML, seqIter.QueryType())
 		case 3:
-			assert.Equal(t, "create table countries (ID number, Name varchar2(50));", seqIter.Statement())
+			assert.Equal(t, "create table countries (ID number, Name varchar2(50))", seqIter.Statement())
 			assert.Equal(t, DDL, seqIter.QueryType())
 			assert.Equal(t, "CreateTable", seqIter.TagValue("name"))
 		default:

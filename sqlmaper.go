@@ -260,7 +260,7 @@ func parseLine(line string) parsedLine {
 	}
 
 	if isQueryLastLine(line) {
-		return parsedLine{Type: lastLineQuery, Value: line}
+		return parsedLine{Type: lastLineQuery, Value: line[:len(line)-1]}
 	}
 
 	return parsedLine{Type: lineQuery, Value: line}

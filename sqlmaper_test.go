@@ -19,7 +19,7 @@ func TestParseLine(t *testing.T) {
 		{"  commit -- commit de los cambios", parsedLine{Type: lineToSkip, Tag: "", Value: ""}},
 		{"  rollback -- rollback de los cambios", parsedLine{Type: lineToSkip, Tag: "", Value: ""}},
 		{"roll", parsedLine{Type: lineQuery, Tag: "", Value: "roll"}}, // this test is to validate that the string slicing are protected, doesn't matter if the sql sentences is not valid
-		{"select count(*) from peoples;", parsedLine{Type: lastLineQuery, Tag: "", Value: "select count(*) from peoples;"}},
+		{"select count(*) from peoples;", parsedLine{Type: lastLineQuery, Tag: "", Value: "select count(*) from peoples"}},
 		{"select count(*)\nfrom pets   -- quantity of pets", parsedLine{Type: lineQuery, Tag: "", Value: "select count(*)\nfrom pets"}},
 		{"-- tag=name: Quantity of peoples", parsedLine{Type: lineName, Tag: "name", Value: "Quantity of peoples"}},
 		{"--tag = NAME: Quantity of pets", parsedLine{Type: lineName, Tag: "name", Value: "Quantity of pets"}},
@@ -30,7 +30,7 @@ func TestParseLine(t *testing.T) {
 		{"-- kk: unknown 3", parsedLine{Type: lineComment, Tag: "", Value: ""}},
 		{"-- commit", parsedLine{Type: lineComment, Tag: "", Value: ""}},
 		{"-- coMMit", parsedLine{Type: lineComment, Tag: "", Value: ""}},
-		{"insert /*+ append */ into peoples select * from aux_peoples;", parsedLine{Type: lastLineQuery, Tag: "", Value: "insert /*+ append */ into peoples select * from aux_peoples;"}},
+		{"insert /*+ append */ into peoples select * from aux_peoples;", parsedLine{Type: lastLineQuery, Tag: "", Value: "insert /*+ append */ into peoples select * from aux_peoples"}},
 		// multiline comments are not supported yet
 		// {"select id, name from peoples /*  i will put the ; at the end of this comment", parsedLine{Type: lineQuery, Tag: "", Value: "select id, name from peoples"}},
 		// {"now the end of the comment and the ;*/;", parsedLine{Type: lineQuery, Tag: "", Value: ";"}},
@@ -174,13 +174,13 @@ func TestParseReader(t *testing.T) {
 		shouldError bool
 	}{
 		{feed: Feed{name: "test1", query: "select count(*), 'HH:MM:SS' from peoples where idPeople = :idPeople;"},
-			expected:    Query{Query: "select count(*), 'HH::MM::SS' from peoples where idPeople = :idPeople;", Type: DQL},
+			expected:    Query{Query: "select count(*), 'HH::MM::SS' from peoples where idPeople = :idPeople", Type: DQL},
 			shouldError: false},
 		{feed: Feed{name: "test2", query: "insert into peoples select peopleID, name from auxPeople where peopleID = :idPeople;"},
-			expected:    Query{Query: "insert into peoples select peopleID, name from auxPeople where peopleID = :idPeople;", Type: DML},
+			expected:    Query{Query: "insert into peoples select peopleID, name from auxPeople where peopleID = :idPeople", Type: DML},
 			shouldError: false},
 		{feed: Feed{name: "test3", query: "create index KKX1 on KK(ID);"},
-			expected:    Query{Query: "create index KKX1 on KK(ID);", Type: DDL},
+			expected:    Query{Query: "create index KKX1 on KK(ID)", Type: DDL},
 			shouldError: false},
 	}
 	for i, tt := range tests {
@@ -211,7 +211,7 @@ func TestParseReaderMultiQueries(t *testing.T) {
 	tags["filename"] = "peoples.psv"
 
 	queries["peoples"] = &Query{
-		Query: "select PeopleID from Peoples;",
+		Query: "select PeopleID from Peoples",
 		Type:  DQL,
 		Tags:  tags,
 		idx:   0,
@@ -224,7 +224,7 @@ func TestParseReaderMultiQueries(t *testing.T) {
 	tags["repo"] = "/shared/test"
 
 	queries["cities"] = &Query{
-		Query: "select CityID from cities where CountryID = :CountryID;",
+		Query: "select CityID from cities where CountryID = :CountryID",
 		Type:  DQL,
 		Tags:  tags,
 		idx:   1,
@@ -301,7 +301,7 @@ select PeopleID from Peoples;
 	queries, err := ParseReader(strings.NewReader(fileRecords))
 	assert.Nil(t, err, "got error when it wasn't expected")
 
-	assert.Equal(t, `select PeopleID from Peoples;`, queries.Statement("Peoples"), "Peoples")
+	assert.Equal(t, `select PeopleID from Peoples`, queries.Statement("Peoples"), "Peoples")
 
 	assert.Equal(t, "", queries.Statement("KK"), "KK")
 
