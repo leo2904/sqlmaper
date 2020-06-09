@@ -9,20 +9,20 @@ import (
 
 func TestFileOrderIterator(t *testing.T) {
 	sqlFile := `
--- tag=name: Select1
--- tag=FileName: peoples.psv
+-- tag:name= Select1
+-- tag:FileName= peoples.psv
 select * from peoples;
--- tag=name: Select2
+-- tag:name= Select2
 select * from cities;
--- tag=name: Update1
+-- tag:name= Update1
 update peoples set Name = 'Leo' where ID = 1;
--- tag=name: Insert1
+-- tag:name= Insert1
 insert into Cities (ID, Name) values (1, 'Barcelone');
--- tag=name: CreateTable
+-- tag:name= CreateTable
 create table countries (ID number, Name varchar2(50));
--- tag=name: FAKE1
+-- tag:name= FAKE1
 -- select * from Fake;
--- tag=name: CreateIndex
+-- tag:name= CreateIndex
 create index counX1 on countries (ID);
 `
 
@@ -64,22 +64,22 @@ create index counX1 on countries (ID);
 
 func TestConcurrentIterator(t *testing.T) {
 	sqlFile := `
--- tag=name: Select1
--- tag=FileName: peoples.psv
+-- tag:name= Select1
+-- tag:FileName= peoples.psv
 select * from peoples;
--- tag=name: Select2
+-- tag:name= Select2
 select * from cities;
--- tag=name: Update1
+-- tag:name= Update1
 update peoples set Name = 'Leo' where ID = 1;
--- tag=name: Insert1
+-- tag:name= Insert1
 insert into Cities (ID, Name) values (1, 'Barcelone');
--- tag=name: CreateTable
+-- tag:name= CreateTable
 create table countries (ID number, Name varchar2(50));
--- tag=name: FAKE1
+-- tag:name= FAKE1
 -- select * from Fake;
--- tag=name: CreateIndex
+-- tag:name= CreateIndex
 create index counX1 on countries (ID);
--- tag=name: Select3
+-- tag:name= Select3
 select * from KK3;
 `
 
@@ -135,10 +135,10 @@ select * from KK3;
 
 func TestConcurrentIteratorWithoutDDLnorDML(t *testing.T) {
 	sqlFile := `
--- tag=name: Select1
--- tag=FileName: peoples.psv
+-- tag:name= Select1
+-- tag:FileName= peoples.psv
 select * from peoples;
--- tag=name: Select2
+-- tag:name= Select2
 select * from cities;
 `
 
@@ -170,11 +170,11 @@ select * from cities;
 
 func TestConcurrentIteratorWithoutDQL(t *testing.T) {
 	sqlFile := `
--- tag=name: Update1
+-- tag:name= Update1
 update peoples set Name = 'Leo' where ID = 1;
--- tag=name: Insert1
+-- tag:name= Insert1
 insert into Cities (ID, Name) values (1, 'Barcelone');
--- tag=name: CreateTable
+-- tag:name= CreateTable
 create table countries (ID number, Name varchar2(50));
 `
 

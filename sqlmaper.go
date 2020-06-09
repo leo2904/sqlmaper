@@ -65,11 +65,11 @@ const (
 	// DDL - Data Definition Languaje (create, drop, etc)
 	DDL
 
-	// TagRegularRegExp is a regular expression to get the regular tags (-- tag=*:)
-	TagRegularRegExp = "(?i)^\\s*--\\s*tag\\s*=\\s*[a-z0-9_-]+\\s*:\\s*"
+	// TagRegularRegExp is a regular expression to get the regular tags (-- tag:*=)
+	TagRegularRegExp = "(?i)^\\s*--\\s*tag\\s*:\\s*[a-z0-9_-]+\\s*=\\s*"
 
-	// TagPrefixRegExp is a regular expression to get the prefix of the regular tags (-- tag=)
-	TagPrefixRegExp = "(?i)^\\s*--\\s*tag\\s*=\\s*"
+	// TagPrefixRegExp is a regular expression to get the prefix of the regular tags (-- tag:)
+	TagPrefixRegExp = "(?i)^\\s*--\\s*tag\\s*:\\s*"
 )
 
 const (
@@ -266,14 +266,14 @@ func parseLine(line string) parsedLine {
 	return parsedLine{Type: lineQuery, Value: line}
 }
 
-// tagName returns the name of the tag in lowercase (eg: --tag=FileName returns filename)
+// tagName returns the name of the tag in lowercase (eg: --tag:FileName returns filename)
 func tagName(tag string) string {
 	match := reTagPrefix.FindStringSubmatch(tag)
 	if len(match) > 0 {
 		tag = strings.TrimPrefix(tag, match[0])
 	}
 
-	i := strings.Index(tag, ":")
+	i := strings.Index(tag, "=")
 	if i > 0 {
 		tag = tag[:i]
 	}

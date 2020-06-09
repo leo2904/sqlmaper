@@ -21,13 +21,13 @@ func TestParseLine(t *testing.T) {
 		{"roll", parsedLine{Type: lineQuery, Tag: "", Value: "roll"}}, // this test is to validate that the string slicing are protected, doesn't matter if the sql sentences is not valid
 		{"select count(*) from peoples;", parsedLine{Type: lastLineQuery, Tag: "", Value: "select count(*) from peoples"}},
 		{"select count(*)\nfrom pets   -- quantity of pets", parsedLine{Type: lineQuery, Tag: "", Value: "select count(*)\nfrom pets"}},
-		{"-- tag=name: Quantity of peoples", parsedLine{Type: lineName, Tag: "name", Value: "Quantity of peoples"}},
-		{"--tag = NAME: Quantity of pets", parsedLine{Type: lineName, Tag: "name", Value: "Quantity of pets"}},
-		{"-- tag= FileName: peoples.unl", parsedLine{Type: lineTag, Tag: "filename", Value: "peoples.unl"}},
-		{"--tag=FileName_2-KK: peoples.unl", parsedLine{Type: lineTag, Tag: "filename_2-kk", Value: "peoples.unl"}},
-		{"-- tag=: unknown 1", parsedLine{Type: lineComment, Tag: "", Value: ""}},
-		{"-- notas varias: 1) los commit son ignorados", parsedLine{Type: lineComment, Tag: "", Value: ""}},
-		{"-- kk: unknown 3", parsedLine{Type: lineComment, Tag: "", Value: ""}},
+		{"-- tag:name= Quantity of peoples", parsedLine{Type: lineName, Tag: "name", Value: "Quantity of peoples"}},
+		{"--tag : NAME= Quantity of pets", parsedLine{Type: lineName, Tag: "name", Value: "Quantity of pets"}},
+		{"-- tag: FileName= peoples.unl", parsedLine{Type: lineTag, Tag: "filename", Value: "peoples.unl"}},
+		{"--tag:FileName_2-KK= peoples.unl", parsedLine{Type: lineTag, Tag: "filename_2-kk", Value: "peoples.unl"}},
+		{"-- tag:= unknown 1", parsedLine{Type: lineComment, Tag: "", Value: ""}},
+		{"-- notas varias= 1) los commit son ignorados", parsedLine{Type: lineComment, Tag: "", Value: ""}},
+		{"-- kk= unknown 3", parsedLine{Type: lineComment, Tag: "", Value: ""}},
 		{"-- commit", parsedLine{Type: lineComment, Tag: "", Value: ""}},
 		{"-- coMMit", parsedLine{Type: lineComment, Tag: "", Value: ""}},
 		{"insert /*+ append */ into peoples select * from aux_peoples;", parsedLine{Type: lastLineQuery, Tag: "", Value: "insert /*+ append */ into peoples select * from aux_peoples"}},
@@ -163,7 +163,7 @@ type Feed struct {
 }
 
 func (f Feed) String() string {
-	return fmt.Sprintf("-- tag=name: %s\n%s\n", f.name, f.query)
+	return fmt.Sprintf("-- tag:name= %s\n%s\n", f.name, f.query)
 }
 
 func TestParseReader(t *testing.T) {
@@ -237,24 +237,24 @@ func TestParseReaderMultiQueries(t *testing.T) {
 		errorText   string
 	}{
 		{`
--- tag=name: Test1
+-- tag:name= Test1
 select 1 from dual;
--- tag= name: Test1
+-- tag: name= Test1
 select 2 from dual;`, nil, true, `duplicated query name: "test1"`},
 
 		{`
--- tag=name: Peoples
+-- tag:name= Peoples
 --master table
--- tag=hasher:1,1,0,0,0
---tag=fileName:peoples.psv
+-- tag:hasher=1,1,0,0,0
+--tag:fileName=peoples.psv
 select PeopleID from Peoples;
 commit;
 
---tag=name:Cities
---tag=hasher:1,0,0
---tag=fileName:cities.psv
+--tag:name=Cities
+--tag:hasher=1,0,0
+--tag:fileName=cities.psv
 -- Basic city information
--- tag = repo: /shared/test
+-- tag : repo= /shared/test
 -- testing multilines query with an inline comment
 select CityID
 from cities -- city table
@@ -287,15 +287,16 @@ rollback;
 }
 
 func TestHelpers(t *testing.T) {
-	fileRecords := `--tag=name:Cities
--- tag=hasher:1,0,0
--- tag=fileName:cities.psv
--- tag = repo: /shared/test
+	fileRecords := `
+--tag:name=Cities
+-- tag:hasher=1,0,0
+-- tag:fileName=cities.psv
+-- tag : repo= /shared/test
 select CityID from cities where CountryID = :CountryID;
 
--- tag=name: Peoples
--- tag=hasher:1,1,0,0,0
--- tag=fileName:peoples.psv
+-- tag:name= Peoples
+-- tag:hasher=1,1,0,0,0
+-- tag:fileName=peoples.psv
 select PeopleID from Peoples;
 `
 	queries, err := ParseReader(strings.NewReader(fileRecords))
