@@ -93,7 +93,7 @@ func BenchmarkIsQueryLastLine(b *testing.B) {
 	resultIQLL = r
 }
 
-func TestScapeColon(t *testing.T) {
+func TestScapeColons(t *testing.T) {
 	var tests = []struct {
 		feed     string
 		expected string
@@ -101,21 +101,21 @@ func TestScapeColon(t *testing.T) {
 		{"", ""},
 		{":", ":"},
 		{"a", "a"},
+		{"to_char(sysdate,'HH24:MM:SS')", "to_char(sysdate,'HH24::MM::SS')"},
+		{"to_char(sysdate,'HH24:MM:SS') and DoctorID = :DoctorID and Status = :Status order by PatientID", "to_char(sysdate,'HH24::MM::SS') and DoctorID = :DoctorID and Status = :Status order by PatientID"},
 		{"a:", "a:"},
 		{"a:b", "a:b"},
-		{":a=:b:", "::a=:b::"},
-		{":=:", "::=:"},
-		{"::a:: =:b:::", "::a:: =:b::::"},
-		{"= :ID", "= :ID"},
-		{"=:ID", "=:ID"},
-		{":MM=   :ID::KK:", "::MM=   :ID::KK::"},
-		{`select to_char(sysdate,"HH24:MM:SS") from peoples where peopleID = IDPeople`, `select to_char(sysdate,"HH24:MM:SS") from peoples where peopleID = IDPeople`},
-		{`select to_char(sysdate,"HH24:MM:SS") from peoples where peopleID = :IDPeople`, `select to_char(sysdate,"HH24::MM::SS") from peoples where peopleID = :IDPeople`},
-		{`select to_char(sysdate,"HH24:MM:SS"), to_date("2020-05-23 17:18:19","YYYY-MM-DD HH24::MM:SS") from peoples where peopleID = :IDPeople and peopleName=:peopleName`, `select to_char(sysdate,"HH24::MM::SS"), to_date("2020-05-23 17::18::19","YYYY-MM-DD HH24::MM::SS") from peoples where peopleID = :IDPeople and peopleName=:peopleName`},
+		{":a=:b:", ":a=:b:"},
+		{":=:", ":=:"},
+		{"f=t(':", "f=t('::"},
+		{"con.Fecha = to_date(:FechaIni, 'YYYYMMDD')", "con.Fecha = to_date(:FechaIni, 'YYYYMMDD')"},
+		{"con.FechaHora = to_date(:FechaHoraIni, 'YYYYMMDD HH:MI::SS')", "con.FechaHora = to_date(:FechaHoraIni, 'YYYYMMDD HH::MI::SS')"},
+		{"con.Cen_ID = :CenterID and con.Fecha between to_date(:FechaIni, 'YYYYMMDD') and to_date(:FechaFin, 'YYYYMMDD')", "con.Cen_ID = :CenterID and con.Fecha between to_date(:FechaIni, 'YYYYMMDD') and to_date(:FechaFin, 'YYYYMMDD')"},
+		{"con.Cen_ID = :CenterID and con.Fecha between to_date(:FechaIni, 'YYYYMMDD HH:MI:SS') and to_date(:FechaFin, 'YYYYMMDD HH24:MI:SS')", "con.Cen_ID = :CenterID and con.Fecha between to_date(:FechaIni, 'YYYYMMDD HH::MI::SS') and to_date(:FechaFin, 'YYYYMMDD HH24::MI::SS')"},
 	}
 
 	for i, tt := range tests {
-		assert.Equal(t, tt.expected, scapeColon(tt.feed), tt.feed, "Case: %d", i)
+		assert.Equal(t, tt.expected, scapeColons(tt.feed), tt.feed, "Case: %d", i)
 	}
 }
 
@@ -124,7 +124,7 @@ var resultSC string
 func BenchmarkScapeColon(b *testing.B) {
 	var r string
 	for i := 0; i < b.N; i++ {
-		scapeColon(`select to_char(sysdate,"HH24:MM:SS"), to_date("2020-05-23 17:18:19","YYYY-MM-DD HH24::MM:SS") from peoples where peopleID = IDPeople and peopleName=peopleName`)
+		scapeColons("select to_char(sysdate,'HH24:MM:SS'), to_date('2020-05-23 17:18:19','YYYY-MM-DD HH24:MM:SS') from peoples where peopleID = :IDPeople and peopleName=peopleName")
 	}
 	resultSC = r
 }

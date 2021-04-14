@@ -193,7 +193,7 @@ func ParseReader(r io.Reader) (Queries, error) {
 				FF = true
 				q.Type = sqlType(q.Query)
 				if q.Type != DDL {
-					q.Query = scapeColon(q.Query)
+					q.Query = scapeColons(q.Query)
 				}
 				q.idx = idx
 				queries[qName] = q
@@ -315,51 +315,41 @@ func isQueryLastLine(line string) bool {
 
 // scapeColon scapes every single colon for a safety use of bind variables
 // using sqlx package
-func scapeColon(s string) string {
+func scapeColons(s string) string {
 	if !strings.Contains(s, ":") {
 		return s
 	}
 
-	if !strings.Contains(s, "=") {
+	if !strings.Contains(s, "'") {
 		return s
 	}
 
 	var str strings.Builder
 	str.Grow(len(s) + 10) // at this point I know for sure that at least one colon wil be duplicate so I make some room for 9 more
 
-	colon := false
-	equal := false
-	bindVarFound := false
+	fc := strings.Index(s, "'")
+	str.WriteString(s[:fc+1])
+	lit := true
 
-	for i := 0; i < len(s); i++ {
-		if equal == true && s[i] != ' ' {
-			equal = false
-			if s[i] == ':' {
-				str.WriteByte(s[i])
-				bindVarFound = true
-				continue
-			}
-		}
-		if colon == true {
-			if s[i] != ':' {
-				str.WriteByte(':')
-				colon = false
-			}
-		}
-		if s[i] == ':' {
-			colon = !colon
-		}
+	for i := fc + 1; i < len(s); i++ {
 		str.WriteByte(s[i])
-		if s[i] == '=' {
-			equal = true
+		if s[i] == '\'' {
+			lit = !lit
+		}
+		if lit {
+			if s[i] == ':' {
+				if i+1 <= len(s)-1 {
+					if s[i+1] == ':' {
+						str.WriteString(":")
+						i++
+						continue
+					}
+				}
+				str.WriteString(":")
+			}
 		}
 	}
-	if colon == true {
-		str.WriteByte(':')
-	}
-	if bindVarFound == false {
-		return s
-	}
+
 	return str.String()
 }
 
