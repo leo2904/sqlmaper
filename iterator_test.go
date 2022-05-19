@@ -24,6 +24,8 @@ create table countries (ID number, Name varchar2(50));
 -- select * from Fake;
 -- tag:name= CreateIndex
 create index counX1 on countries (ID);
+-- tag:name= with select
+with auxTable as (select test_id from dual) select * from auxTable;
 `
 
 	queries, err := ParseReader(strings.NewReader(sqlFile))
@@ -55,6 +57,9 @@ create index counX1 on countries (ID);
 		case 6:
 			assert.Equal(t, "create index counX1 on countries (ID)", iter.Statement(), "")
 			assert.Equal(t, DDL, iter.QueryType())
+		case 7:
+			assert.Equal(t, "with auxTable as (select test_id from dual) select * from auxTable", iter.Statement())
+			assert.Equal(t, DQL, iter.QueryType())
 		default:
 			t.Errorf("Should be not here, ever - i: %d", i)
 		}
