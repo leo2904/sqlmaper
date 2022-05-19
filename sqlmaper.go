@@ -220,6 +220,11 @@ func sqlType(q string) int {
 		return DDL
 	}
 
+	switch s[:5] {
+	case "WITH ":
+		return DQL
+	}
+
 	switch s[:10] {
 	case "DROP TABLE", "DROP INDEX":
 		return DDL

@@ -140,10 +140,11 @@ func TestSqlType(t *testing.T) {
 		{"delete from KK where ID = 1;", DML},
 		{"drop table", DDL},
 		{"-- select 1 from dual;", UKN},
+		{"with aux_agendas as (select test_id from dual) select * from aux_agendas;", DQL},
 	}
 
 	for i, tt := range tests {
-		assert.Equal(t, tt.expected, sqlType(tt.feed), tt.feed, "Case: %d", i)
+		assert.Equal(t, tt.expected, sqlType(tt.feed), tt.feed, "Case:", i)
 	}
 }
 
