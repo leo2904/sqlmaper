@@ -42,24 +42,31 @@ with auxTable as (select test_id from dual) select * from auxTable;
 			assert.Equal(t, DQL, iter.QueryType())
 			assert.Equal(t, "Select1", iter.TagValue("name"))
 			assert.Equal(t, "peoples.psv", iter.TagValue("fileName"))
+
 		case 2:
 			assert.Equal(t, "select * from cities", iter.Statement(), "")
 			assert.Equal(t, DQL, iter.QueryType())
+
 		case 3:
 			assert.Equal(t, "update peoples set Name = 'Leo' where ID = 1", iter.Statement(), "")
 			assert.Equal(t, DML, iter.QueryType())
+
 		case 4:
 			assert.Equal(t, "insert into Cities (ID, Name) values (1, 'Barcelone')", iter.Statement(), "")
 			assert.Equal(t, DML, iter.QueryType())
+
 		case 5:
 			assert.Equal(t, "create table countries (ID number, Name varchar2(50))", iter.Statement(), "")
 			assert.Equal(t, DDL, iter.QueryType())
+
 		case 6:
 			assert.Equal(t, "create index counX1 on countries (ID)", iter.Statement(), "")
 			assert.Equal(t, DDL, iter.QueryType())
+
 		case 7:
 			assert.Equal(t, "with auxTable as (select test_id from dual) select * from auxTable", iter.Statement())
 			assert.Equal(t, DQL, iter.QueryType())
+
 		default:
 			t.Errorf("Should be not here, ever - i: %d", i)
 		}
